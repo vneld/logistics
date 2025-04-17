@@ -1,67 +1,116 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>물류개론 퀴즈</title>
   <style>
-    body {
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #000000;
+      --correct-color: green;
+      --incorrect-color: red;
+      --button-bg: #eeeeee;
+      --input-bg: #ffffff;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-color: #121212;
+        --text-color: #ffffff;
+        --correct-color: #66ff66;
+        --incorrect-color: #ff6666;
+        --button-bg: #1e1e1e;
+        --input-bg: #1c1c1c;
+      }
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
       font-family: Arial, sans-serif;
-      padding: 2rem;
-      text-align: center; /* 텍스트 가운데 정렬 */
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      text-align: center;
+      padding: 1rem;
+      -webkit-text-size-adjust: none;
     }
+
     h1 {
-      font-size: 2rem; /* 제목 크기 20% 축소 */
-      margin-bottom: 2rem;
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
     }
+
     .question-box {
       margin-bottom: 2rem;
     }
+
     #question {
-      font-size: 1.44rem; /* 문제 텍스트 크기 20% 축소 */
+      font-size: 1.2rem;
       margin-bottom: 1rem;
     }
+
     #answerInput {
-      font-size: 1.2rem; /* 입력 필드 크기 20% 축소 */
-      padding: 0.4rem;
-      width: 40%; /* 입력 필드 너비 줄임 */
-      text-align: center; /* 입력 텍스트 가운데 정렬 */
+      font-size: 1rem;
+      padding: 0.6rem;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      margin: 0 auto;
+      box-sizing: border-box;
+      background-color: var(--input-bg);
+      color: var(--text-color);
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
+
     #feedback {
-      font-size: 1.2rem; /* 피드백 텍스트 크기 20% 축소 */
+      font-size: 1rem;
       margin-top: 1rem;
     }
+
     .correct {
-      color: green;
+      color: var(--correct-color);
     }
+
     .incorrect {
-      color: red;
+      color: var(--incorrect-color);
     }
+
     #mode-buttons button {
-      font-size: 1rem; /* 버튼 크기 20% 축소 */
-      padding: 0.4rem 0.8rem;
-      margin-right: 10px;
+      display: block;
+      width: 100%;
+      max-width: 300px;
+      margin: 10px auto;
+      font-size: 1rem;
+      padding: 0.6rem;
+      background-color: var(--button-bg);
+      color: var(--text-color);
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
-  
-    @media (max-width: 600px) {
-      #answerInput {
-        width: 80%;
-        font-size: 1rem;
+
+    @media screen and (orientation: landscape) {
+      body {
+        padding: 2rem;
       }
-      #mode-buttons button {
-        font-size: 0.9rem;
-        padding: 0.3rem 0.6rem;
-        margin: 0.2rem;
-        display: block;
-        width: 80%;
-        margin-left: auto;
-        margin-right: auto;
-      }
+
       h1 {
-        font-size: 1.5rem;
+        font-size: 2rem;
+      }
+
+      #question {
+        font-size: 1.4rem;
+      }
+
+      #answerInput {
+        font-size: 1.2rem;
+      }
+
+      #feedback {
+        font-size: 1.2rem;
       }
     }
-  
   </style>
 </head>
 <body>
@@ -69,7 +118,10 @@
   <div id="mode-buttons">
     <button onclick="startQuiz('all')">전체 120문제</button>
     <button onclick="startQuiz('random30')">랜덤 30문제</button>
-    <button onclick="startQuiz('random120')">랜덤 120문제</button>
+    <button onclick="startQuiz('group1')">1~30</button>
+    <button onclick="startQuiz('group2')">31~60</button>
+    <button onclick="startQuiz('group3')">61~90</button>
+    <button onclick="startQuiz('group4')">91~120</button>
   </div>
 
   <div id="quiz-container" style="display:none;">
@@ -92,9 +144,9 @@
         { sentence: "7. ___은 물류를 판매 중에서도 제품을 소비자에게 운송하는 개별 기능으로 간주한다.", answer: "물류유통" },
         { sentence: "8. ___는 군사용어인 ‘병참’이 전투를 제외한 모든 기능이다.", answer: "로지스틱스" },
         { sentence: "9. 1990년대 이후 기업 내부와 외부를 포괄하는 ___의 개념으로 확대되었다.", answer: "공급망관리" },
-        { sentence: "10. 물류의 기본기능 중 ___은 생산자와 소비자의 거리차이를 좁혀준다.", answer: "운송기능" },
-        { sentence: "11. 물류의 기본기능 중 ___은 생산 시기와 소비 시기가 달라도 소비할 수 있게 해준다.", answer: "보관기능" },
-        { sentence: "12. 물류의 기본기능 중 ___은 수요와 공급의 격차가 발생할 때 가격 조정 역할을 할 뿐 아니라, 운송비용 절감으로 원가절감에도 기여한다.", answer: "운송과 보관기능" },
+        { sentence: "10. 물류의 기본기능 중 ___은 생산자와 소비자의 거리차이를 좁혀준다.", answer: "운송" },
+        { sentence: "11. 물류의 기본기능 중 ___은 생산 시기와 소비 시기가 달라도 소비할 수 있게 해준다.", answer: "보관" },
+        { sentence: "12. 물류의 기본기능 중 ___은 수요와 공급의 격차가 발생할 때 가격 조정 역할을 할 뿐 아니라, 운송비용 절감으로 원가절감에도 기여한다.", answer: "운송과 보관" },
         { sentence: "13. 물류의 기본기능 중 ___을 통해 생산자와 소비자가 유대관계를 구축할 수 있도록 연결해 주는 역할을 한다.", answer: "운송과 포장" },
         { sentence: "14. 물류 활동별 기능 중 ___은 제품이나 상품을 효용가치가 낮은 장소에서 높은 장소로 이동시켜 효용가치를 높이는 활동이다.", answer: "운송" },
         { sentence: "15. 물류 활동별 기능 중 ___은 제품이나 상품을 물리적으로 저장하는 활동이다.", answer: "보관" },
@@ -221,6 +273,14 @@
           quiz = [...allQuestions].sort(() => Math.random() - 0.5).slice(0, 30);
         } else if (mode === 'random120') {
           quiz = [...allQuestions].sort(() => Math.random() - 0.5);
+        } else if (mode === 'group1') {
+          quiz = allQuestions.slice(0, 30);
+        } else if (mode === 'group2') {
+          quiz = allQuestions.slice(30, 60);
+        } else if (mode === 'group3') {
+          quiz = allQuestions.slice(60, 90);
+        } else if (mode === 'group4') {
+          quiz = allQuestions.slice(90, 120);
         } else {
           quiz = [...allQuestions];
         }
@@ -269,12 +329,12 @@
           correctCount++;
           feedback.textContent = `정답입니다! (${answer})`;
           feedback.className = 'correct';
-          timeoutId = setTimeout(nextQuestion, 1500); // 정답일 경우 1.5초 딜레이
+          timeoutId = setTimeout(nextQuestion, 700); // 정답일 경우 1.5초 딜레이
         } else {
           incorrectCount++;
           feedback.textContent = `오답입니다. 정답은 (${answer}) 입니다.`;
           feedback.className = 'incorrect';
-          timeoutId = setTimeout(nextQuestion, 2000); // 오답일 경우 2초 딜레이
+          timeoutId = setTimeout(nextQuestion, 1500); // 오답일 경우 2초 딜레이
         }
         updateScore();
         document.getElementById("answerInput").disabled = true;
@@ -305,3 +365,4 @@
   </script>
 </body>
 </html>
+
