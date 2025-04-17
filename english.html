@@ -138,22 +138,35 @@
       currentQuiz = quizData[selectedPart];
       currentIndex = 0;
       score = 0;
+
       document.getElementById("quizArea").style.display = "block";
       document.getElementById("finalResult").textContent = '';
+      document.getElementById("feedback").textContent = '';
+      document.getElementById("feedback").className = "feedback";
+      document.getElementById("userAnswer").value = '';
+      document.getElementById("quizImage").style.display = "none";
+      document.getElementById("quizImage").src = '';
+
       showQuestion();
     }
 
     function showQuestion() {
+      const current = currentQuiz[currentIndex];
+      const part = document.getElementById("partSelect").value;
+      const questionText = document.getElementById("questionText");
+      const quizImage = document.getElementById("quizImage");
+
       document.getElementById("feedback").textContent = '';
       document.getElementById("userAnswer").value = '';
-      const current = currentQuiz[currentIndex];
-      document.getElementById("questionText").innerHTML = `<strong>Q${currentIndex + 1}:</strong> 이미지를 보고 알맞은 단어를 입력하세요.`;
-      
-      // 이미지 표시
-      const quizImage = document.getElementById("quizImage");
-      if (current.image) {
+
+      if (part === 'vocab') {
+        questionText.innerHTML = `<strong>Q${currentIndex + 1}:</strong> 이미지를 보고 알맞은 단어를 입력하세요.`;
         quizImage.src = current.image;
         quizImage.style.display = "block";
+      } else {
+        questionText.innerHTML = `<strong>Q${currentIndex + 1}:</strong> ${current.question}`;
+        quizImage.style.display = "none";
+        quizImage.src = '';
       }
 
       document.getElementById("progress").textContent = `문제 ${currentIndex + 1} / ${currentQuiz.length}`;
@@ -175,7 +188,7 @@
 
       currentIndex++;
       if (currentIndex < currentQuiz.length) {
-        setTimeout(showQuestion, 2000); // 2초 후 다음 문제
+        setTimeout(showQuestion, 2000);
       } else {
         setTimeout(() => {
           document.getElementById("quizArea").style.display = "none";
