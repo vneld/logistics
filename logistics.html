@@ -5,6 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>물류개론 퀴즈</title>
   <style>
+   .back-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      font-size: 14px;
+      cursor: pointer;
+      z-index: 1000;
+  }
+
+  .back-button:hover {
+    background-color: #0056b3;
+  }
     :root {
       --bg-color: #ffffff;
       --text-color: #000000;
@@ -363,6 +382,7 @@
       window.startQuiz = startQuiz;
     });
   </script>
+  <button class="back-button" onclick="window.location.href='/logistics/index.html'">이전</button>
 </body>
 </html>
 
