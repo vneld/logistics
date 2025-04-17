@@ -4,6 +4,25 @@
   <meta charset="UTF-8">
   <title>영어 퀴즈 프로그램 (한 문제씩)</title>
   <style>
+  .back-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    font-size: 14px;
+    cursor: pointer;
+    z-index: 1000;
+  }
+
+  .back-button:hover {
+    background-color: #0056b3;
+  }
     body {
       font-family: 'Segoe UI', sans-serif;
       background: #f0f0f0;
@@ -197,5 +216,6 @@
       }
     }
   </script>
+  <button class="back-button" onclick="window.location.href='/logistics/index.html'">이전</button>
 </body>
 </html>
