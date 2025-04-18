@@ -1,40 +1,154 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>스포츠 리더십 퀴즈</title>
   <style>
-    /* ...[생략: 기존 스타일 그대로 유지]... */
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      text-align: center;
+      background-color: white;
+      color: black;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    body.dark-mode {
+      background-color: #3a3a3a;
+      color: #ffffff;
+    }
+    h1 { font-size: 2rem; margin-bottom: 2rem; }
+    #question { font-size: 1.2rem; margin-bottom: 1rem; }
+    #answerInput { font-size: 1.2rem; padding: 0.5rem; width: 50%; text-align: center; }
+    #feedback { margin-top: 1rem; font-weight: bold; }
+    .correct { color: green; }
+    .incorrect { color: red; }
+    button {
+      margin: 0.5rem;
+      padding: 0.6rem 1.2rem;
+      font-size: 1.2rem;
+      border-radius: 6px;
+    }
+    #backButton { margin-top: 1.5rem; display: none; }
+    .button-row {
+      margin-bottom: 1rem;
+    }
   </style>
 </head>
 <body>
-  <h1>스포츠 리더십 퀴즈</h1>
-
+  <h1>스포츠 리더십 퀴즈 <span id="score">(맞은 문제: 0, 틀린 문제: 0)</span></h1>
   <div id="mode-buttons">
     <div class="button-row">
-      <button onclick="startQuiz('all')">전체 퀴즈 시작</button>
+      <button onclick="startQuiz('all')">전체 순서</button>
+      <button onclick="startQuiz('random')">전체 랜덤</button>
+      <button onclick="startQuiz('random10')">랜덤 10문제</button>
+    </div>
+    <div class="button-row">
+      <button onclick="startQuiz('range1')">1~30번</button>
+      <button onclick="startQuiz('range2')">31~60번</button>
+      <button onclick="startQuiz('range3')">61~85번</button>
+    </div>
+    <div class="button-row">
+      <button onclick="toggleDarkMode()">다크 모드 전환</button>
     </div>
   </div>
-
-  <div id="quiz" style="display: none;">
-    <div id="question"></div>
-    <input type="text" id="answerInput" placeholder="정답을 입력하세요" onkeydown="if(event.key === 'Enter') checkAnswer()" />
-    <div id="feedback"></div>
-    <div id="score"></div>
-    <button onclick="nextQuestion()">다음 문제</button>
+  <div id="quiz" style="display:none;">
+    <p id="question"></p>
+    <input type="text" id="answerInput" placeholder="정답을 입력하세요">
+    <p id="feedback"></p>
+    <div id="backButton">
+      <button onclick="goToMain()">이전으로</button>
+    </div>
   </div>
-
-  <button class="back-button" id="backButton" onclick="goBack()">뒤로</button>
 
   <script>
     const allQuestions = [
       { sentence: "1. 가장 어려운 일은 __________이다.", answer: "사람 마음을 얻는 일" },
       { sentence: "2. 대학은 내일의 _______이 오늘의 _______을 만나는 곳이다.", answer: "지성인" },
       { sentence: "3. 아무리 쉬운 일이라도 협력하여 하면 훨씬 더 효과적이다를 이르는 속담은?", answer: "백지장도 맞들면 낫다" },
-      // ...[전체 문제 유지]...
+      { sentence: "4. 아무리 훌륭하고 좋은 것이라도 다듬고 정리하여 쓸모 있게 만들어 놓아야 값어치가 있음을 이르는 속담은?", answer: "진주가 서말이라도 꿰어야 보배다" },
+      { sentence: "5. 리더은 _______이다.", answer: "지도자" },
+      { sentence: "6. 리더십은 _______이나 _______를 이끌어 나가는 능력이다.", answer: "조직, 단체" },
+      { sentence: "7. _______된 지도자는 프로팀 소속팀의 감독처럼 타인에 의해 _______된다.", answer: "임명" },
+      { sentence: "8. _______된 지도자는 국가대표 축구감독처럼 _______된 경우를 말한다.", answer: "선출" },
+      { sentence: "9. _______된 지도자는 조직화의 정도가 낮은 동호회 등에서 나타난다.", answer: "부상" },
+      { sentence: "10. 리더의 네 가지 덕목 중 첫째는 _______이다.", answer: "역경지수" },
+      { sentence: "11. 리더의 네 가지 덕목 중 둘째는 _______이다.", answer: "대인관계" },
+      { sentence: "12. 리더의 네 가지 덕목 중 셋째는 _______이다.", answer: "전문성" },
+      { sentence: "13. 리더의 네 가지 덕목 중 넷째는 _______이다.", answer: "인성" },
+      { sentence: "14. 모든 리더는 팀원들 간의 _______을 통해 공동 목표를 달성하는 것을 목표로 한다.", answer: "상호작용" },
+      { sentence: "15. _______이나 _______은 주어진 선수로 팀이 원하는 성과를 내야 한다.", answer: "감독, 주장" },
+      { sentence: "16. 손자는 손자병법에서 _______을 소개했다.", answer: "도천지장법" },
+      { sentence: "17. ‘______________’는 적을 알고 나를 알면 백 번 싸워도 위태롭지 않다는 뜻이다.", answer: "지피지기백전불태" },
+      { sentence: "18. SWOT 분석에서 S와 W는 _______이다.", answer: "내부환경" },
+      { sentence: "19. SWOT 분석에서 O와 T는 _______이다.", answer: "외부환경" },
+      { sentence: "20. 도천지장법에서 도는 _______과 _______을 의미한다.", answer: "정당성, 명분" },
+      { sentence: "21. 도천지장법에서 천은 _______, 즉 타이밍을 의미한다.", answer: "때" },
+      { sentence: "22. 도천지장법에서 지는 _______, 거리, 위치 등을 포함한다.", answer: "지형" },
+      { sentence: "23. 도천지장법에서 장은 _______을 뜻한다.", answer: "개인 능력" },
+      { sentence: "24. 도천지장법에서 법은 _______을 의미한다.", answer: "상벌" },
+      { sentence: "25. 지식 삼각형의 순서는 _______ _______ _______ _______ 순서이다.", answer: "데이터, 정보, 지식, 지혜" },
+      { sentence: "26. 지혜는 지식의 한계를 뛰어넘는 _______을 바탕으로 하는 능력이다.", answer: "통찰력" },
+      { sentence: "27. 역경지수에서의 세 가지 유형은 _______ _______ _______ 이다.", answer: "쿼터, 캠퍼, 클라이머" },
+      { sentence: "28. 매슬로우의 1단계 욕구는 _______ 욕구이다.", answer: "생리적" },
+      { sentence: "29. 매슬로우의 2단계 욕구는 _______의 욕구이다.", answer: "안전" },
+      { sentence: "30. 매슬로우의 3단계 욕구는 _______ 욕구이다.", answer: "사회적" },
+      { sentence: "31. 매슬로우의 4단계 욕구는 _______의 욕구이다.", answer: "존경" },
+      { sentence: "32. 매슬로우의 5단계 욕구는 _______의 욕구이다.", answer: "자아실현" },
+      { sentence: "33. _______는 사람들 간의 상호작용을 의미한다.", answer: "대인관계" },
+      { sentence: "34. IQ는 지적능력을 뜻하고, EQ는 감성지수를 뜻한다. _____는 역경지수를 뜻한다.", answer: "AQ" },
+      { sentence: "35. 효과적인 대인관계를 위한 5가지 중 첫번째는 _______이다.", answer: "경청" },
+      { sentence: "36. 이청득심. 듣기와 말하기의 비율은 __:__이 이상적이다.", answer: "7, 3" },
+      { sentence: "37. 효과적인 대인관계를 위한 5가지 중 두번째는 _______이다.", answer: "협동" },
+      { sentence: "38. 효과적인 대인관계를 위한 5가지 중 세번째는 _______이다.", answer: "이해" },
+      { sentence: "39. 효과적인 대인관계를 위한 5가지 중 네번째는 _______이다.", answer: "신뢰" },
+      { sentence: "40. 신뢰는 약속을 지키고 _______ 있게 대하는 것으로 형성된다.", answer: "일관성" },
+      { sentence: "41. 효과적인 대인관계를 위한 5가지 중 다섯번째는 _______이다.", answer: "긍정적인 말과 행동" },
+      { sentence: "42. 로사다 비율은 긍정 ____ 대 부정 ____이다.", answer: "2.9, 1" },
+      { sentence: "43. _______이란 내가 필요할 때 도움을 줄 수 있는 사람들이다.", answer: "인맥" },
+      { sentence: "44. 효과적인 인맥을 위해서는 내가 주변 사람들에게 ______________를 줄 수 있어야한다.", answer: "필요로 하는 무언가" },
+      { sentence: "45. 인맥은 내 실력이 타인의 _______와 연결되어야 한다.", answer: "가치" },
+      { sentence: "46. 효과적인 인맥 관리를 위해서는 _______을 만들어야 한다.", answer: "압도적인 실력" },
+      { sentence: "47. 효과적인 인맥 관리를 위해서는 _______를 잘 해야 한다.", answer: "인사" },
+      { sentence: "48. 무재칠시 중 하나는 _______, 즉 반가운 얼굴이다.", answer: "화안시" },
+      { sentence: "49. 무재칠시 중 하나는 _______, 즉 부드러운 말이다.", answer: "언사시" },
+      { sentence: "50. 무재칠시 중 하나는 _______, 즉 앉을 자리 마련이다.", answer: "상좌시" },
+      { sentence: "51. 무재칠시 중 하나는 _______, 즉 방을 내어주는 것이다.", answer: "방사시" },
+      { sentence: "52. 무재칠시 중 하나는 _______, 즉 몸으로 부축하는 것이다.", answer: "심시" },
+      { sentence: "53. 무재칠시 중 하나는 _______, 즉 편안한 눈으로 대하는 것이다.", answer: "안시" },
+      { sentence: "54. 무재칠시 중 하나는 _______, 즉 열린 마음이다.", answer: "신시" },
+      { sentence: "55. 셀프 리더십을 발전시키기 위한 5가지 중 첫번째는 _______이다.", answer: "목표설정" },
+      { sentence: "56. 셀프 리더십을 발전시키기 위한 5가지 중 두번째는 _______이다.", answer: "시간관리" },
+      { sentence: "57. 셀프 리더십을 발전시키기 위한 5가지 중 세번째는 _______이다.", answer: "자기동기부여" },
+      { sentence: "58. 셀프 리더십을 발전시키기 위한 5가지 중 네번째는 _______이다.", answer: "새로운 지식에 관한 공부" },
+      { sentence: "59. 셀프 리더십을 발전시키기 위한 5가지 중 다섯번째는 _______이다.", answer: "문제 해결 및 결정 능력" },
+      { sentence: "60. _______ 리더십은 구성원의 동기를 높이고 창의적이고 혁신적인 아이디어를 유도한다.", answer: "변혁적" },
+      { sentence: "61. 변혁적 리더십은 기존의 _______이나 전통적인 방법에 도전한다.", answer: "관행" },
+      { sentence: "62. 변혁적 리더십은 조직 내부의 _______을 인식하고 해결하려 노력한다.", answer: "문제점" },
+      { sentence: "63. 변혁적 리더십은 적극적인 _______과 _______에 주력한다.", answer: "인재 발굴, 조직 성장" },
+      { sentence: "64. 변혁적 리더십은 조직의 _______를 개선하는 데 효과적이다.", answer: "성과" },
+      { sentence: "65. 서번트 리더십은 권위보다 _______와 _______을 중시한다.", answer: "서비스, 연대감" },
+      { sentence: "66. 서번트 리더십은 _______의 리더십이다.", answer: "살신성인" },
+      { sentence: "67. 서번트 리더십은 팀원의 _______와 _______을 중시한다.", answer: "성과, 발전" },
+      { sentence: "68. 서번트 리더십은 팀원들의 _______을 목표로 한다.", answer: "역량 향상" },
+      { sentence: "69. 서번트 리더십은 동료 간 _______과 _______을 촉진한다.", answer: "협력, 의사소통" },
+      { sentence: "70. 서번트 리더십은 팀원들의 _______을 돕는 것을 목적으로 한다.", answer: "자아실현" },
+      { sentence: "71. 서번트 리더는 _______도 마다하지 않는다.", answer: "허드렛일" },
+      { sentence: "72. _______ 리더십은 리더의 통제력과 권위를 중시한다.", answer: "권위주의" },
+      { sentence: "73. 권위주의 리더십은 _______에서 효과적이다.", answer: "위기 상황" },
+      { sentence: "74. 권위주의 리더십은 ______________을 내릴 수 있다.", answer: "빠르고 강한 결정" },
+      { sentence: "75. 권위주의 리더십은 조직의 _______과 _______을 저해할 수 있다.", answer: "유연성, 창의성" },
+      { sentence: "76. 권위주의 리더십은 조직의 _______을 방지하는 데 도움을 준다.", answer: "혼란" },
+      { sentence: "77. 권위주의 리더십은 _______과 _______로 일을 처리한다.", answer: "명확한 기준 잣대" },
+      { sentence: "78. _______ 리더십은 팀원에게 책임과 권한을 위임한다.", answer: "위임형" },
+      { sentence: "79. 위임형 리더십은 _______을 부여하는 방식이다.", answer: "자율성" },
+      { sentence: "80. 위임형 리더십은 팀원의 _______를 증가시킨다.", answer: "참여" },
+      { sentence: "81. 위임형 리더십은 리더와 팀원 간의 _______를 증진시킨다.", answer: "신뢰" },
+      { sentence: "82. 위임형 리더십은 리더의 ____________를 줄인다.", answer: "의사소통 관여" },
+      { sentence: "83. 좋은 리더는 ______________에 중점을 둔다.", answer: "공동의 목표 달성" },
+      { sentence: "84. ______________은 목표 달성의 핵심이다.", answer: "팀원 간 상호작용" },
       { sentence: "85. 지도자는 ____________을 최대한 이끌어내야 한다.", answer: "팀의 역량" }
     ];
+
 
     let quiz = [], index = 0, correct = 0, total = 0;
     const questionEl = document.getElementById("question");
@@ -43,75 +157,85 @@
     const scoreEl = document.getElementById("score");
 
     function startQuiz(mode) {
-      index = 0;
-      correct = 0;
-      total = allQuestions.length;
+      index = 0; correct = 0; total = 0;
       document.getElementById("mode-buttons").style.display = "none";
       document.getElementById("quiz").style.display = "block";
       document.getElementById("backButton").style.display = "block";
 
-      if (mode === 'all') {
-        quiz = [...allQuestions];
-      }
+      if (mode === 'all') quiz = [...allQuestions];
+      else if (mode === 'random') quiz = [...allQuestions].sort(() => Math.random() - 0.5);
+      else if (mode === 'random10') quiz = [...allQuestions].sort(() => Math.random() - 0.5).slice(0, 10);
+      else if (mode === 'range1') quiz = allQuestions.slice(0, 30);
+      else if (mode === 'range2') quiz = allQuestions.slice(30, 60);
+      else if (mode === 'range3') quiz = allQuestions.slice(60, 85);
 
-      shuffleArray(quiz);
       showQuestion();
     }
 
     function showQuestion() {
-      feedbackEl.textContent = "";
-      scoreEl.textContent = `문제 ${index + 1} / ${quiz.length}`;
-      answerInput.value = "";
+      if (index >= quiz.length) {
+        questionEl.textContent = "퀴즈 종료! 수고하셨습니다.";
+        answerInput.style.display = "none";
+        feedbackEl.textContent = '';
+        return;
+      }
+      answerInput.value = '';
+      answerInput.disabled = false;
+      answerInput.style.display = 'inline';
       answerInput.focus();
       questionEl.textContent = quiz[index].sentence;
+      feedbackEl.textContent = '';
+      updateScore();
     }
 
-    function checkAnswer() {
-      const userAnswer = answerInput.value.trim();
-      const correctAnswer = quiz[index].answer;
+    answerInput.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        const user = answerInput.value.replace(/\s+/g, '').toLowerCase();
+        const correctAnswer = quiz[index].answer.replace(/\s+/g, '').toLowerCase();
 
-      if (userAnswer === correctAnswer) {
-        feedbackEl.textContent = "정답입니다!";
-        feedbackEl.className = "correct";
-        correct++;
-      } else {
-        feedbackEl.textContent = `오답입니다. 정답: ${correctAnswer}`;
-        feedbackEl.className = "incorrect";
+        // 답이 여러 개인 경우 쉼표로 나누어 배열로 처리
+        const userAnswers = user.split(',').map(a => a.trim());
+        const correctAnswers = correctAnswer.split(',').map(a => a.trim());
+
+        total++;
+
+        // 모든 정답이 포함되는지 확인
+        const isCorrect = correctAnswers.every(answer => userAnswers.includes(answer)) &&
+                          userAnswers.every(answer => correctAnswers.includes(answer));
+
+        if (isCorrect) {
+          correct++;
+          feedbackEl.textContent = `정답입니다! (${quiz[index].answer})`;
+          feedbackEl.className = 'correct';
+          setTimeout(() => nextQuestion(), 1000);
+        } else {
+          feedbackEl.textContent = `오답입니다. 정답은 (${quiz[index].answer}) 입니다.`;
+          feedbackEl.className = 'incorrect';
+          setTimeout(() => nextQuestion(), 2000);
+        }
+        updateScore();
+        answerInput.disabled = true;
       }
-    }
+    });
 
     function nextQuestion() {
-      if (index < quiz.length - 1) {
-        index++;
-        showQuestion();
-      } else {
-        endQuiz();
-      }
+      index++;
+      showQuestion();
     }
 
-    function endQuiz() {
-      questionEl.textContent = `퀴즈 완료! 정답 수: ${correct} / ${quiz.length}`;
-      document.getElementById("answerInput").style.display = "none";
-      document.getElementById("feedback").style.display = "none";
-      scoreEl.textContent = "";
+    function updateScore() {
+      scoreEl.textContent = `(맞은 문제: ${correct}, 틀린 문제: ${total - correct})`;
     }
 
-    function goBack() {
+    function goToMain() {
       document.getElementById("mode-buttons").style.display = "block";
       document.getElementById("quiz").style.display = "none";
       document.getElementById("backButton").style.display = "none";
-      document.getElementById("answerInput").style.display = "inline-block";
-      document.getElementById("feedback").style.display = "block";
     }
 
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
     }
   </script>
-
-  <button class="back-button" onclick="window.location.href='/logistics/index.html'">이전</button>
 </body>
-</html>
+</html> 
