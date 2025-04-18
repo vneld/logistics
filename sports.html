@@ -236,6 +236,64 @@
     function toggleDarkMode() {
       document.body.classList.toggle("dark-mode");
     }
+
+    let wrongAnswers = [];
+
+function showQuestion() {
+  if (index < quiz.length) {
+    questionEl.textContent = quiz[index].sentence;
+    answerInput.value = "";
+    feedbackEl.textContent = "";
+  } else {
+    questionEl.textContent = "퀴즈 완료!";
+    answerInput.style.display = "none";
+    document.getElementById("submitBtn").style.display = "none";
+    scoreEl.textContent = `총 ${quiz.length}문제 중 ${correct}문제 맞힘!`;
+    if (wrongAnswers.length > 0) {
+      const retryBtn = document.createElement("button");
+      retryBtn.textContent = "틀린 문제 다시 풀기";
+      retryBtn.onclick = retryWrongQuestions;
+      retryBtn.style.marginTop = "1rem";
+      document.getElementById("quiz").appendChild(retryBtn);
+    }
+  }
+}
+
+function checkAnswer() {
+  const userAnswer = answerInput.value.trim();
+  const correctAnswer = quiz[index].answer;
+  total++;
+
+  if (userAnswer === correctAnswer) {
+    correct++;
+    feedbackEl.textContent = "정답입니다!";
+    feedbackEl.className = "correct";
+  } else {
+    feedbackEl.textContent = `틀렸습니다. 정답: ${correctAnswer}`;
+    feedbackEl.className = "incorrect";
+    wrongAnswers.push(quiz[index]); // 틀린 문제 저장
+  }
+
+  index++;
+  setTimeout(showQuestion, 1000);
+}
+
+function retryWrongQuestions() {
+  if (wrongAnswers.length === 0) return;
+  quiz = [...wrongAnswers];
+  wrongAnswers = [];
+  index = 0;
+  correct = 0;
+  total = 0;
+  answerInput.style.display = "inline-block";
+  document.getElementById("submitBtn").style.display = "inline-block";
+  scoreEl.textContent = "";
+  document.getElementById("quiz").querySelectorAll("button").forEach(btn => {
+    if (btn.textContent === "틀린 문제 다시 풀기") btn.remove();
+  });
+  showQuestion();
+}
+
   </script>
 </body>
 </html> 
