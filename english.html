@@ -1,221 +1,820 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>영어 퀴즈 프로그램 (한 문제씩)</title>
-  <style>
-  .back-button {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 60px;
-    height: 60px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    font-size: 14px;
-    cursor: pointer;
-    z-index: 1000;
-  }
-
-  .back-button:hover {
-    background-color: #0056b3;
-  }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f0f0f0;
-      padding: 30px;
-    }
-    .container {
-      max-width: 700px;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h1 {
-      text-align: center;
-    }
-    select, input, button {
-      font-size: 16px;
-      margin: 10px 0;
-      padding: 10px;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .feedback {
-      font-weight: bold;
-      margin-top: 10px;
-    }
-    .correct {
-      color: green;
-    }
-    .wrong {
-      color: red;
-    }
-    .question {
-      font-size: 18px;
-      margin-top: 20px;
-    }
-    #quizImage {
-      display: none;
-      max-width: 100%;
-      margin-top: 20px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>영어 문제 풀이</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html, body {
+            margin: 0; padding: 0;
+            background: #f9f9f9;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        .header {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-top: 60px;
+            margin-bottom: 24px;
+            letter-spacing: 2px;
+        }
+        .menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        .menu button {
+            font-size: 1rem;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            background: #4a90e2;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .menu button:active, .menu button:hover {
+            background: #357abd;
+        }
+        .scoreboard-area {
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            z-index: 100;
+            background: #fff;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .nav-btn {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 101;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 8px;
+            background: #f2b84b;
+            color: #222;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            cursor: pointer;
+        }
+        .nav-btn:active {
+            background: #f6d27b;
+        }
+        .nav-btn.hidden {
+            display: none;
+        }
+        .content {
+            max-width: 96vw;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            padding: 28px 10px;
+            min-height: 180px;
+            position: relative;
+        }
+        .question {
+            font-size: 1.1rem;
+            margin-bottom: 18px;
+            color: #222;
+        }
+        .eng-highlight {
+            font-weight: bold;
+            color: #2b4a7a;
+            background: #e2f2ff;
+            border-radius: 5px;
+            padding: 2px 6px;
+            display: inline-block;
+            word-break: break-all;
+        }
+        .input-area {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .input-area input {
+            flex: 1;
+            font-size: 1rem;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #bbb;
+        }
+        .input-area button {
+            font-size: 1rem;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            background: #4a90e2;
+            color: white;
+            cursor: pointer;
+        }
+        .result {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .next-btn {
+            margin-top: 8px;
+            font-size: 1rem;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            background: #6fdc6f;
+            color: #222;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+        /* 빈칸상자 스타일 */
+        .box-words-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .draggable-word {
+            display: inline-block;
+            padding: 8px 10px;
+            background: #e0e7ef;
+            border-radius: 8px;
+            margin: 3px 1px;
+            cursor: grab;
+            border: 1.5px solid #4a90e2;
+            font-size: 0.95rem;
+            user-select: none;
+        }
+        .draggable-word.hidden {
+            display: none !important;
+        }
+        .dropzone {
+            min-width: 90px;
+            min-height: 32px;
+            border: 2px dashed #bbb;
+            border-radius: 8px;
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0 4px;
+            background: #f7f7f7;
+            text-align: center;
+            line-height: 32px;
+        }
+        .dropzone.filled {
+            border: 2px solid #4a90e2;
+            background: #d7f2ff;
+        }
+        .blank-question {
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        .blank-kor {
+            margin-bottom: 3px;
+            color: #444;
+        }
+        .blank-eng {
+            font-weight: bold;
+            color: #2b4a7a;
+            background: #e2f2ff;
+            border-radius: 5px;
+            padding: 2px 6px;
+            display: inline-block;
+        }
+        .blankbox-row {
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        .blankbox-label {
+            display: inline-block;
+            min-width: 22px;
+            font-weight: bold;
+        }
+        .blankbox-result {
+            display: inline-block;
+            min-width: 36px;
+            font-weight: bold;
+            margin-right: 7px;
+        }
+        @media (max-width: 480px) {
+            .header { font-size: 1.2rem; margin-top: 46px; margin-bottom: 16px; }
+            .scoreboard-area { font-size: 0.93rem; padding: 4px 8px; }
+            .nav-btn { font-size: 0.95rem; padding: 7px 10px; }
+            .content { padding: 14px 2vw; }
+            .menu button { font-size: 0.95rem; padding: 8px 10px; }
+            .question, .blank-question, .blankbox-row { font-size: 0.97rem; }
+            .draggable-word { font-size: 0.9rem; padding: 7px 7px; }
+            .dropzone { min-width: 70px; min-height: 28px; font-size: 0.92rem; }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>영어 퀴즈 프로그램</h1>
-    <label for="partSelect">퀴즈 파트 선택:</label>
-    <select id="partSelect">
-      <option value="numbers">A. 숫자 읽기</option>
-      <option value="sentences">B. 문장으로 답하기</option>
-      <option value="translate">C. 우리말 → 영어</option>
-      <option value="vocab">D. 이미지 묘사 단어 맞추기</option>
-    </select>
-    <button onclick="startQuiz()">퀴즈 시작</button>
-
-    <div id="quizArea" style="display:none;">
-      <div class="question" id="questionText"></div>
-      <img id="quizImage" src="" alt="">
-      <input type="text" id="userAnswer" placeholder="정답을 입력하세요">
-      <button onclick="submitAnswer()">정답 제출</button>
-      <div class="feedback" id="feedback"></div>
-      <div id="progress"></div>
+    <div class="scoreboard-area" id="scoreboard-area">
+        맞힌 개수: <span id="score-correct">0</span> / 오답: <span id="score-wrong">0</span>
+    </div>
+    <button class="nav-btn" id="nav-btn" onclick="navAction()">이전</button>
+    <div class="header">영어 문제 풀이</div>
+    <div class="menu">
+        <button id="btn-translate">해석</button>
+        <button id="btn-verb">동사변형</button>
+        <button id="btn-blank">빈칸</button>
+        <button id="btn-blankbox">빈칸상자</button>
+        <button id="btn-sentence">문장</button>
+    </div>
+    <div class="content" id="main-content">
+        <div style="text-align:center; color:#888; font-size:1.1rem;">
+            버튼을 눌러 문제를 시작하세요!
+        </div>
     </div>
 
-    <div id="finalResult" class="feedback" style="text-align:center;"></div>
-  </div>
+    <script>
+        // ---- 데이터 ----
+        // 1. 해석: 키워드 포함 정답 처리
+        const translationQuestions = [
+            {
+                eng: "You weren’t there when they first made paper or built the amphitheatre, when they calculated gravity or made flying reality.",
+                kor: "그들이 처음 종이를 만들거나 원형극장을 지을 때, 그들이 중력을 계산하거나 비행 현실을 만들었을 때 당신은 그곳에 없었습니다.",
+                keywords: ["그들이", "처음", "종이", "만들거나", "원형극장", "지", "중력을 계산", "비행 현실을 만", "당신은 그곳에 없었습니다"]
+            },
+            {
+                eng: "It says you are trained in technology. That's very good. Are you adept at Excel?",
+                kor: "기술 교육을 받았다고 쓰여 있네요. 아주 잘됐네요. 혹시 엑셀은 능숙하신가요?",
+                keywords: ["기술 교육", "받", "쓰여", "아주", "혹시", "엑셀", "능숙"]
+            },
+            {
+                eng: "We see this famous brand everywhere but never consider what their logos mean exactly. But every line, curve and color has meaning behind it.",
+                kor: "우리는 이 유명한 브랜드를 어디에서나 볼 수 있지만 그 로고가 정확히 무엇을 의미하는지는 결코 고려하지 않습니다. 하지만 모든 선, 곡선, 그리고 색상 뒤에는 의미가 있습니다.",
+                keywords: ["우리", "이", "유명한 브랜드", "어디에서나", "볼", "로고가", "정확히 무엇을 의미하는", "결코", "고려하지 않", "하지만", "모든", "선", "곡선", "그리고", "색상", "뒤에는", "의미", "있"]
+            },
+            {
+                eng: 'If "manners maketh man" as someone said, then he\'s the hero of the day.',
+                kor: '누군가가 말한 것처럼 "매너가 인간을 만든다"면, 그는 오늘의 영웅입니다.',
+                keywords: ["누군가", "말", "매너가 인간을 만든다", "그", "오늘의", "영웅"]
+            },
+            {
+                eng: "One person that's been influential on my life would, I would say, my father.",
+                kor: "제 삶에 영향을 준 한 사람은, 제 아버지라고 할 수 있습니다.",
+                keywords: ["제", "삶", "영향", "준", "한", "사람", "제", "아버지"]
+            }
+        ];
 
-  <script>
-    const quizData = {
-      numbers: [
-        { question: "10,030", answer: "ten thousand thirty" },
-        { question: "51,684,564", answer: "fifty one million six hundred eighty four thousand five hundred sixty four" },
-        { question: "8,161,972,572", answer: "eight billion one hundred sixty one million nine hundred seventy two thousand five hundred seventy two" },
-        { question: "2,697,900,000,000", answer: "two trillion six hundred ninety seven billion nine hundred million" },
-        { question: "$15.25", answer: "fifteen dollars twenty five cents" },
-        { question: "$30.50", answer: "thirty fifty" },
-        { question: "$77.75", answer: "seventy seven seventy five" },
-        { question: "2/3", answer: "two thirds" },
-        { question: "1/3", answer: "one third" },
-        { question: "2/5", answer: "two fifths" }
-      ],
-      sentences: [
-        { question: "What do you usually do in your free time?<br>나는 운전하면서 음악을 들어", answer: "i’m into listening to music while driving" },
-        { question: "Why do you enjoy your hobbies?<br>스트레스를 해소할 수 있고 행복해지거든요.", answer: "because i can relieve the stress and it makes me happy" },
-        { question: "How often do you play computer games?<br>나는 컴퓨터 게임을 한 적이 없어.", answer: "i never play computer games" },
-        { question: "Hi, how can I help you?<br>아이스 아메리카노 주세요", answer: "can i get an iced americano?" },
-        { question: "For here or to go?<br>여기서요", answer: "for here please" },
-        { question: "What’s the purpose of your visit?<br>출장때문에 왔어요", answer: "i’m here to take a business trip" },
-        { question: "Would you like to go to the movies this Sunday?<br>그러고 싶지만 할 일이 있어서요.", answer: "i’d like to, but i have something to do" },
-        { question: "Shall we take a walk or get a taxi to the restaurant?<br>걸어가자", answer: "let’s take a walk" },
-        { question: "What are you going to do this weekend?<br>나는 이번주 주말에 등산할 예정이다", answer: "i am going to go hiking to the mountain this weekend" },
-        { question: "What do you usually do after school?<br>나는 보통 일과후 헬스한다", answer: "i usually work out at the gym" }
-      ],
-      translate: [
-        { question: "톨 사이즈의 아이스 아메리카노에 샷 추가해서 주문할 수 있을까요?", answer: "can i get an iced americano with an extra shot?" },
-        { question: "매니저는 매달 창고에서 디지털 시스템을 사용하여 재고를 확인합니다.", answer: "the manager checks the inventory in the warehouse using the digital system every month" },
-        { question: "저는 일주일에 세 번 헬스장에 가요.", answer: "i go to the gym three times a week" },
-        { question: "안전벨트를 매세요.", answer: "fasten your seatbelt, please" },
-        { question: "나도 가고 싶은데 알바 하러 가야 해.", answer: "i’d like to, but i have to work a part-time job" },
-        { question: "내가 너 데리러 갈게.", answer: "i’ll pick you up" },
-        { question: "구름을 봐봐, 곧 비가 올 것이야.", answer: "look at those clouds! it’s going to rain soon" },
-        { question: "태워주셔서 감사해요. 잔돈은 가지세요.", answer: "thank you for the ride. keep the change" },
-        { question: "내가 결코 하지 않는 일은 저녁에 커피를 마시는 거예요.", answer: "one thing i never do is i drink coffee in the evening" },
-        { question: "나는 비행기 티켓을 예약할 예정이다.", answer: "i am going to book a flight ticket" },
-        { question: "그란데 사이즈의 마키아토 시럽 빼고 주문할 수 있을까요?", answer: "can i get a grande macchiato without syrup?" },
-        { question: "시간 가는 줄 몰랐어.", answer: "i lost track of time" }
-      ],
-      vocab: [
-        { image: "images/first-class.png", answer: "first class" },
-        { image: "images/business-class.png", answer: "business class" },
-        { image: "images/baggage-claim.png", answer: "baggage claim" },
-        { image: "images/passport.png", answer: "passport" },
-        { image: "images/in-flight-meal.png", answer: "in-flight meal" },
-        { image: "images/economy-class.png", answer: "economy class" },
-        { image: "images/aisle-seat.png", answer: "aisle seat" },
-        { image: "images/boarding-pass.png", answer: "boarding pass" },
-        { image: "images/receipt.png", answer: "receipt" },
-        { image: "images/sweet-treats.png", answer: "sweet treats" },
-        { image: "images/tumbler.png", answer: "tumbler" },
-        { image: "images/sleeve.png", answer: "sleeve" },
-        { image: "images/straw.png", answer: "straw" }
-      ]
-    };
+        // 2. 동사변형
+        const verbQuestions = [
+            { q: "The movie ____ ____ (make) in 1965", a: "was made" },
+            { q: "My phone _____  ________ (steal)  a few days ago", a: "was stolen" },
+            { q: "A : How ______ (be) the party last night?", a: "was" },
+            { q: "It _____ (be) great.", a: "was" },
+            { q: "I _______ (have) a terrible headache yesterday.", a: "had" },
+            { q: "Last year She _____(be) 22", a: "was" },
+            { q: "so she _______(be) 23 now.", a: "is" },
+            { q: "Sarah ____  ______ (live) in Paris since 1995.", a: "has lived" },
+            { q: "She _____ ___ (not, be) to Spain yet.", a: "hasn't been" }
+        ];
 
-    let currentQuiz = [];
-    let currentIndex = 0;
-    let score = 0;
+        // 3. 빈칸
+        const blankQuestions = [
+            {
+                kor: "나는 예전에 담배를 폈어.",
+                eng: "I ______ ___ smoke.",
+                a: "used to"
+            },
+            {
+                kor: "린과 마크는 20년 전에 결혼했어.",
+                eng: "Lynn and Mark got married _____ ____ ___.",
+                a: "twenty years ago"
+            },
+            {
+                kor: "너는 기술에 능숙해야만 해.",
+                eng: "You've got to ____ really ____  ___ technology.",
+                a: "be good at"
+            },
+            {
+                kor: "난 이미 여행갈 짐을 다 싸놨어.",
+                eng: "I have _____ done packing for the trip.",
+                a: "already"
+            },
+            {
+                kor: "우리는 잘 맞지 않을 거 같아.",
+                eng: "I don’t think we are going to be a _____ ____ .",
+                a: "good fit"
+            }
+        ];
 
-    function startQuiz() {
-      const selectedPart = document.getElementById("partSelect").value;
-      currentQuiz = quizData[selectedPart];
-      currentIndex = 0;
-      score = 0;
+        // 4. 빈칸상자
+        const blankboxWords = [
+            "X-ray machine", "ride-hailing", "adidas", "byte", "bite",
+            "generation", "digital signal", "flavors", "representative", "client", "Siri"
+        ];
+        const blankboxQuestions = [
+            {
+                q: "____ is a virtual assistant that is part of Apple Inc.'s iOS",
+                a: "Siri"
+            },
+            {
+                q: "A ________ is all of the people born and living at about the same time",
+                a: "generation"
+            },
+            {
+                q: "The logo of _____ has changed over time but it has always included three stripes.",
+                a: "adidas"
+            },
+            {
+                q: "He realized that ______ sounded exactly the same as the computer terms, ________",
+                a: ["bite", "byte"]
+            },
+            {
+                q: "The last two are similar to the number 1 & 0 that is symbols of ______ ________.",
+                a: "digital signal"
+            },
+            {
+                q: "__________ is when a person uses an app to “hail” or request a local driver to pick them up and take them directly to their destination.",
+                a: "ride-hailing"
+            }
+        ];
 
-      document.getElementById("quizArea").style.display = "block";
-      document.getElementById("finalResult").textContent = '';
-      document.getElementById("feedback").textContent = '';
-      document.getElementById("feedback").className = "feedback";
-      document.getElementById("userAnswer").value = '';
-      document.getElementById("quizImage").style.display = "none";
-      document.getElementById("quizImage").src = '';
+        // 5. 문장
+        const sentenceQuestions = [
+            { q: "How do you get to school?", a: "I walk to school for 4 hours" },
+            { q: "How long does it take to get to school?", a: "It takes about 1 hours by car" },
+            { q: "What’s your major?", a: "My major is Logistics" },
+            { q: "What do you want to be someday?", a: "I hope one day to be an expert" },
+            { q: "What did you do last weekend?", a: "I stayed at home and played computer games" },
+            { q: "What are you like?", a: "I`m logical and creative" },
+            { q: "Where were you born?", a: "I was born is Busan" },
+            { q: "What kind of car would you like to buy in the future? What is the reason?", a: "I would like to buy an BMW because it is cool" },
+            { q: "What’ your strength?", a: "I`m good at creativity" },
+            { q: "What have you achieved this year?", a: "I`ve a lot of friends in college" }
+        ];
 
-      showQuestion();
-    }
+        // ---- 상태 ----
+        let correct = 0;
+        let wrong = 0;
+        let currentIdx = 0;
+        let currentPage = "main";
+        let prevStack = [];
 
-    function showQuestion() {
-      const current = currentQuiz[currentIndex];
-      const part = document.getElementById("partSelect").value;
-      const questionText = document.getElementById("questionText");
-      const quizImage = document.getElementById("quizImage");
+        // ---- 네비게이션/초기화 버튼 ----
+        function updateNavBtn() {
+            const navBtn = document.getElementById('nav-btn');
+            if(currentPage === "main") {
+                navBtn.textContent = "초기화";
+            } else {
+                navBtn.textContent = "이전";
+            }
+        }
+        function navAction() {
+            if(currentPage === "main") {
+                correct = 0; wrong = 0;
+                updateScore();
+            } else {
+                goPrev();
+            }
+        }
 
-      document.getElementById("feedback").textContent = '';
-      document.getElementById("userAnswer").value = '';
+        // ---- 공통 함수 ----
+        function updateScore() {
+            document.getElementById('score-correct').textContent = correct;
+            document.getElementById('score-wrong').textContent = wrong;
+        }
+        function showPrevBtn(show = true) {
+            document.getElementById('nav-btn').classList.toggle('hidden', !show);
+        }
+        function goPrev() {
+            if (prevStack.length > 0) {
+                const prev = prevStack.pop();
+                switch (prev.page) {
+                    case "main": showMain(); break;
+                    case "translate": showTranslationQuiz(prev.idx); break;
+                    case "verb": showVerbQuiz(prev.idx); break;
+                    case "blank": showBlankQuiz(prev.idx); break;
+                    case "blankbox": showBlankboxQuiz(); break;
+                    case "sentence": showSentenceQuiz(prev.idx); break;
+                }
+            }
+        }
+        function pushPrev(page, idx = 0) {
+            prevStack.push({ page, idx });
+        }
+        function showMain() {
+            currentPage = "main";
+            showPrevBtn(true);
+            updateNavBtn();
+            document.getElementById('main-content').innerHTML = `
+                <div style="text-align:center; color:#888; font-size:1.1rem;">
+                    버튼을 눌러 문제를 시작하세요!
+                </div>
+            `;
+        }
+        // ---- 해석 ----
+        document.getElementById('btn-translate').addEventListener('click', () => showTranslationQuiz(0));
+        function showTranslationQuiz(idx = 0) {
+            currentPage = "translate";
+            pushPrev("main");
+            showPrevBtn(true);
+            updateNavBtn();
+            correct = 0; wrong = 0; currentIdx = idx;
+            updateScore();
+            renderTranslationQuestion();
+        }
+        function renderTranslationQuestion() {
+            const q = translationQuestions[currentIdx];
+            let html = `
+                <div class="question"><b>영어 문장:</b><br><span class="eng-highlight">${q.eng}</span></div>
+                <div class="input-area">
+                    <input type="text" id="answer-input" placeholder="해석을 입력하세요" autocomplete="off">
+                    <button id="answer-btn">제출</button>
+                </div>
+                <div class="result" id="result-msg"></div>
+                <button class="next-btn hidden" id="next-btn">다음 문제</button>
+            `;
+            document.getElementById('main-content').innerHTML = html;
+            document.getElementById('answer-input').focus();
+            document.getElementById('answer-input').onkeydown = function(e) {
+                if (["Enter", " ", "ArrowRight", "ArrowDown"].includes(e.key)) {
+                    e.preventDefault();
+                    if (!document.getElementById('answer-input').disabled) checkAnswer();
+                    else if (!document.getElementById('next-btn').classList.contains('hidden')) nextQuestion();
+                }
+            };
+            document.getElementById('answer-btn').onclick = checkAnswer;
+            document.getElementById('next-btn').onclick = nextQuestion;
+        }
+        function checkAnswer() {
+            const userInput = document.getElementById('answer-input').value.trim();
+            const answer = translationQuestions[currentIdx].kor.trim();
+            const resultMsg = document.getElementById('result-msg');
+            const nextBtn = document.getElementById('next-btn');
+            const keywords = translationQuestions[currentIdx].keywords;
+            let allIncluded = keywords.every(k => userInput.includes(k));
+            if (allIncluded) {
+                resultMsg.textContent = "정답입니다! 👍";
+                resultMsg.style.color = "#2b9e2b";
+                correct++;
+            } else {
+                resultMsg.textContent = "오답입니다. 정답: " + answer;
+                resultMsg.style.color = "#e23c3c";
+                wrong++;
+            }
+            updateScore();
+            nextBtn.classList.remove('hidden');
+            document.getElementById('answer-input').disabled = true;
+        }
+        function nextQuestion() {
+            currentIdx++;
+            if (currentIdx < translationQuestions.length) {
+                renderTranslationQuestion();
+            } else {
+                document.getElementById('main-content').innerHTML = `
+                    <div style="text-align:center; font-size:1.2rem; margin-bottom:14px;">
+                        해석 문제 풀이 완료!
+                    </div>
+                    <div style="text-align:center; font-size:1rem; margin-bottom:10px;">
+                        맞힌 개수: <b>${correct}</b> / 오답: <b>${wrong}</b>
+                    </div>
+                    <div style="text-align:center;">
+                        <button class="next-btn" onclick="showTranslationQuiz(0)">다시 풀기</button>
+                        <button class="next-btn" onclick="showMain()">처음으로</button>
+                    </div>
+                `;
+            }
+        }
 
-      if (part === 'vocab') {
-        questionText.innerHTML = `<strong>Q${currentIndex + 1}:</strong> 이미지를 보고 알맞은 단어를 입력하세요.`;
-        quizImage.src = current.image;
-        quizImage.style.display = "block";
-      } else {
-        questionText.innerHTML = `<strong>Q${currentIndex + 1}:</strong> ${current.question}`;
-        quizImage.style.display = "none";
-        quizImage.src = '';
-      }
+        // ---- 동사변형 ----
+        document.getElementById('btn-verb').addEventListener('click', () => showVerbQuiz(0));
+        function showVerbQuiz(idx = 0) {
+            currentPage = "verb";
+            pushPrev("main");
+            showPrevBtn(true);
+            updateNavBtn();
+            correct = 0; wrong = 0; currentIdx = idx;
+            updateScore();
+            renderVerbQuestion();
+        }
+        function renderVerbQuestion() {
+            const q = verbQuestions[currentIdx];
+            let html = `
+                <div class="question"><b>문장:</b><br><span class="eng-highlight">${q.q}</span></div>
+                <div class="input-area">
+                    <input type="text" id="verb-input" placeholder="정답을 입력하세요" autocomplete="off">
+                    <button id="verb-btn">제출</button>
+                </div>
+                <div class="result" id="verb-result"></div>
+                <button class="next-btn hidden" id="verb-next-btn">다음 문제</button>
+            `;
+            document.getElementById('main-content').innerHTML = html;
+            document.getElementById('verb-input').focus();
+            document.getElementById('verb-input').onkeydown = function(e) {
+                if (["Enter", " ", "ArrowRight", "ArrowDown"].includes(e.key)) {
+                    e.preventDefault();
+                    if (!document.getElementById('verb-input').disabled) checkVerbAnswer();
+                    else if (!document.getElementById('verb-next-btn').classList.contains('hidden')) nextVerb();
+                }
+            };
+            document.getElementById('verb-btn').onclick = checkVerbAnswer;
+            document.getElementById('verb-next-btn').onclick = nextVerb;
+        }
+        function checkVerbAnswer() {
+            const userInput = document.getElementById('verb-input').value.trim().replace(/\s+/g, " ");
+            const answer = verbQuestions[currentIdx].a.trim().replace(/\s+/g, " ");
+            const resultMsg = document.getElementById('verb-result');
+            const nextBtn = document.getElementById('verb-next-btn');
+            if (userInput.toLowerCase() === answer.toLowerCase()) {
+                resultMsg.textContent = "정답입니다! 👍";
+                resultMsg.style.color = "#2b9e2b";
+                correct++;
+            } else {
+                resultMsg.textContent = "오답입니다. 정답: " + answer;
+                resultMsg.style.color = "#e23c3c";
+                wrong++;
+            }
+            updateScore();
+            nextBtn.classList.remove('hidden');
+            document.getElementById('verb-input').disabled = true;
+        }
+        function nextVerb() {
+            currentIdx++;
+            if (currentIdx < verbQuestions.length) {
+                renderVerbQuestion();
+            } else {
+                document.getElementById('main-content').innerHTML = `
+                    <div style="text-align:center; font-size:1.2rem; margin-bottom:14px;">
+                        동사변형 문제 풀이 완료!
+                    </div>
+                    <div style="text-align:center; font-size:1rem; margin-bottom:10px;">
+                        맞힌 개수: <b>${correct}</b> / 오답: <b>${wrong}</b>
+                    </div>
+                    <div style="text-align:center;">
+                        <button class="next-btn" onclick="showVerbQuiz(0)">다시 풀기</button>
+                        <button class="next-btn" onclick="showMain()">처음으로</button>
+                    </div>
+                `;
+            }
+        }
 
-      document.getElementById("progress").textContent = `문제 ${currentIndex + 1} / ${currentQuiz.length}`;
-    }
+        // ---- 빈칸 ----
+        document.getElementById('btn-blank').addEventListener('click', () => showBlankQuiz(0));
+        function showBlankQuiz(idx = 0) {
+            currentPage = "blank";
+            pushPrev("main");
+            showPrevBtn(true);
+            updateNavBtn();
+            correct = 0; wrong = 0; currentIdx = idx;
+            updateScore();
+            renderBlankQuestion();
+        }
+        function renderBlankQuestion() {
+            const q = blankQuestions[currentIdx];
+            let html = `
+                <div class="blank-question">
+                    <div class="blank-kor">${q.kor}</div>
+                    <div class="blank-eng">${q.eng}</div>
+                </div>
+                <div class="input-area">
+                    <input type="text" id="blank-input" placeholder="정답을 입력하세요" autocomplete="off">
+                    <button id="blank-btn">제출</button>
+                </div>
+                <div class="result" id="blank-result"></div>
+                <button class="next-btn hidden" id="blank-next-btn">다음 문제</button>
+            `;
+            document.getElementById('main-content').innerHTML = html;
+            document.getElementById('blank-input').focus();
+            document.getElementById('blank-input').onkeydown = function(e) {
+                if (["Enter", " ", "ArrowRight", "ArrowDown"].includes(e.key)) {
+                    e.preventDefault();
+                    if (!document.getElementById('blank-input').disabled) checkBlankAnswer();
+                    else if (!document.getElementById('blank-next-btn').classList.contains('hidden')) nextBlank();
+                }
+            };
+            document.getElementById('blank-btn').onclick = checkBlankAnswer;
+            document.getElementById('blank-next-btn').onclick = nextBlank;
+        }
+        function checkBlankAnswer() {
+            const userInput = document.getElementById('blank-input').value.trim().replace(/\s+/g, " ");
+            const answer = blankQuestions[currentIdx].a.trim().replace(/\s+/g, " ");
+            const resultMsg = document.getElementById('blank-result');
+            const nextBtn = document.getElementById('blank-next-btn');
+            if (userInput.toLowerCase() === answer.toLowerCase()) {
+                resultMsg.textContent = "정답입니다! 👍";
+                resultMsg.style.color = "#2b9e2b";
+                correct++;
+            } else {
+                resultMsg.textContent = "오답입니다. 정답: " + answer;
+                resultMsg.style.color = "#e23c3c";
+                wrong++;
+            }
+            updateScore();
+            nextBtn.classList.remove('hidden');
+            document.getElementById('blank-input').disabled = true;
+        }
+        function nextBlank() {
+            currentIdx++;
+            if (currentIdx < blankQuestions.length) {
+                renderBlankQuestion();
+            } else {
+                document.getElementById('main-content').innerHTML = `
+                    <div style="text-align:center; font-size:1.2rem; margin-bottom:14px;">
+                        빈칸 문제 풀이 완료!
+                    </div>
+                    <div style="text-align:center; font-size:1rem; margin-bottom:10px;">
+                        맞힌 개수: <b>${correct}</b> / 오답: <b>${wrong}</b>
+                    </div>
+                    <div style="text-align:center;">
+                        <button class="next-btn" onclick="showBlankQuiz(0)">다시 풀기</button>
+                        <button class="next-btn" onclick="showMain()">처음으로</button>
+                    </div>
+                `;
+            }
+        }
 
-    function submitAnswer() {
-      const input = document.getElementById("userAnswer").value.trim().toLowerCase();
-      const correctAnswer = currentQuiz[currentIndex].answer.trim().toLowerCase();
-      const feedback = document.getElementById("feedback");
+        // ---- 빈칸상자 ----
+        document.getElementById('btn-blankbox').addEventListener('click', showBlankboxQuiz);
+        function showBlankboxQuiz() {
+            currentPage = "blankbox";
+            pushPrev("main");
+            showPrevBtn(true);
+            updateNavBtn();
+            correct = 0; wrong = 0;
+            updateScore();
+            let html = `<div class="box-words-area" id="box-words-area">`;
+            blankboxWords.forEach((w, i) => {
+                html += `<div class="draggable-word" draggable="true" id="word-${i}" data-word="${w}">${w}</div>`;
+            });
+            html += `</div><div style="margin-bottom:10px; color:#888;">단어 상자를 드래그해서 빈칸에 올려놓으세요.</div>`;
+            blankboxQuestions.forEach((q, i) => {
+                html += `<div class="blankbox-row" id="blankbox-row-${i}">
+                    <span class="blankbox-label">${i+1}.</span>
+                    ${renderBlankboxQuestion(q, i)}
+                    <span class="blankbox-result" id="blankbox-result-${i}"></span>
+                </div>`;
+            });
+            html += `<button class="next-btn" onclick="checkBlankboxAnswer()">정답 확인</button>
+                    <button class="next-btn" onclick="showMain()">처음으로</button>`;
+            document.getElementById('main-content').innerHTML = html;
+            makeBlankboxDraggable();
+        }
+        function renderBlankboxQuestion(q, idx) {
+            if (Array.isArray(q.a)) {
+                return q.q.replace("______", `<span class="dropzone" data-row="${idx}" data-pos="0"></span>`)
+                          .replace("______", `<span class="dropzone" data-row="${idx}" data-pos="1"></span>`);
+            } else if (q.q.includes("____") && !Array.isArray(q.a)) {
+                return q.q.replace(/____+/, `<span class="dropzone" data-row="${idx}" data-pos="0"></span>`);
+            } else {
+                return q.q;
+            }
+        }
+        function makeBlankboxDraggable() {
+            document.querySelectorAll('.draggable-word').forEach(el => {
+                el.addEventListener('dragstart', e => {
+                    e.dataTransfer.setData('text/plain', el.dataset.word);
+                    setTimeout(() => el.classList.add('hidden'), 0);
+                });
+                el.addEventListener('dragend', e => {
+                    if (!el.classList.contains('used')) el.classList.remove('hidden');
+                });
+            });
+            document.querySelectorAll('.dropzone').forEach(zone => {
+                zone.addEventListener('dragover', e => e.preventDefault());
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    const word = e.dataTransfer.getData('text/plain');
+                    if ([...document.querySelectorAll('.dropzone')].some(z => z.textContent === word)) return;
+                    zone.textContent = word;
+                    zone.classList.add('filled');
+                    document.querySelectorAll('.draggable-word').forEach(el => {
+                        if (el.dataset.word === word) {
+                            el.classList.add('used');
+                            el.classList.add('hidden');
+                        }
+                    });
+                });
+                zone.addEventListener('click', e => {
+                    const word = zone.textContent;
+                    if (word) {
+                        document.querySelectorAll('.draggable-word').forEach(el => {
+                            if (el.dataset.word === word) {
+                                el.classList.remove('used');
+                                el.classList.remove('hidden');
+                            }
+                        });
+                    }
+                    zone.textContent = "";
+                    zone.classList.remove('filled');
+                });
+            });
+        }
+        function checkBlankboxAnswer() {
+            let allCorrect = 0;
+            let allWrong = 0;
+            blankboxQuestions.forEach((q, idx) => {
+                let ok = false;
+                if (Array.isArray(q.a)) {
+                    const z0 = document.querySelector(`.dropzone[data-row="${idx}"][data-pos="0"]`);
+                    const z1 = document.querySelector(`.dropzone[data-row="${idx}"][data-pos="1"]`);
+                    if (z0 && z1 && z0.textContent && z1.textContent) {
+                        ok = (z0.textContent.trim().toLowerCase() === q.a[0].toLowerCase() &&
+                              z1.textContent.trim().toLowerCase() === q.a[1].toLowerCase());
+                    }
+                } else {
+                    const z0 = document.querySelector(`.dropzone[data-row="${idx}"][data-pos="0"]`);
+                    if (z0 && z0.textContent) {
+                        ok = (z0.textContent.trim().toLowerCase() === q.a.toLowerCase());
+                    }
+                }
+                const res = document.getElementById(`blankbox-result-${idx}`);
+                if (ok) {
+                    res.textContent = "정답";
+                    res.style.color = "#2b9e2b";
+                    allCorrect++;
+                } else {
+                    res.textContent = "오답";
+                    res.style.color = "#e23c3c";
+                    allWrong++;
+                }
+            });
+            correct = allCorrect;
+            wrong = allWrong;
+            updateScore();
+        }
 
-      if (input === correctAnswer) {
-        feedback.textContent = "✅ 정답입니다!";
-        feedback.className = "feedback correct";
-        score++;
-      } else {
-        feedback.textContent = `❌ 오답입니다! 정답: ${currentQuiz[currentIndex].answer}`;
-        feedback.className = "feedback wrong";
-      }
-
-      currentIndex++;
-      if (currentIndex < currentQuiz.length) {
-        setTimeout(showQuestion, 5000);
-      } else {
-        setTimeout(() => {
-          document.getElementById("quizArea").style.display = "none";
-          document.getElementById("finalResult").textContent = `🎉 모든 문제 완료! 점수: ${score} / ${currentQuiz.length}`;
-        }, 2500);
-      }
-    }
-  </script>
-  <button class="back-button" onclick="window.location.href='/logistics/index.html'">이전</button>
+        // ---- 문장 ----
+        document.getElementById('btn-sentence').addEventListener('click', () => showSentenceQuiz(0));
+        function showSentenceQuiz(idx = 0) {
+            currentPage = "sentence";
+            pushPrev("main");
+            showPrevBtn(true);
+            updateNavBtn();
+            correct = 0; wrong = 0; currentIdx = idx;
+            updateScore();
+            renderSentenceQuestion();
+        }
+        function renderSentenceQuestion() {
+            const q = sentenceQuestions[currentIdx];
+            let html = `
+                <div class="question"><b>질문:</b><br><span class="eng-highlight">${q.q}</span></div>
+                <div class="input-area">
+                    <input type="text" id="sentence-input" placeholder="답을 입력하세요" autocomplete="off">
+                    <button id="sentence-btn">제출</button>
+                </div>
+                <div class="result" id="sentence-result"></div>
+                <button class="next-btn hidden" id="sentence-next-btn">다음 문제</button>
+            `;
+            document.getElementById('main-content').innerHTML = html;
+            document.getElementById('sentence-input').focus();
+            document.getElementById('sentence-input').onkeydown = function(e) {
+                if (["Enter", " ", "ArrowRight", "ArrowDown"].includes(e.key)) {
+                    e.preventDefault();
+                    if (!document.getElementById('sentence-input').disabled) checkSentenceAnswer();
+                    else if (!document.getElementById('sentence-next-btn').classList.contains('hidden')) nextSentence();
+                }
+            };
+            document.getElementById('sentence-btn').onclick = checkSentenceAnswer;
+            document.getElementById('sentence-next-btn').onclick = nextSentence;
+        }
+        function checkSentenceAnswer() {
+            const userInput = document.getElementById('sentence-input').value.trim().replace(/\s+/g, " ");
+            const answer = sentenceQuestions[currentIdx].a.trim().replace(/\s+/g, " ");
+            const resultMsg = document.getElementById('sentence-result');
+            const nextBtn = document.getElementById('sentence-next-btn');
+            if (userInput.toLowerCase() === answer.toLowerCase()) {
+                resultMsg.textContent = "정답입니다! 👍";
+                resultMsg.style.color = "#2b9e2b";
+                correct++;
+            } else {
+                resultMsg.textContent = "오답입니다. 정답: " + answer;
+                resultMsg.style.color = "#e23c3c";
+                wrong++;
+            }
+            updateScore();
+            nextBtn.classList.remove('hidden');
+            document.getElementById('sentence-input').disabled = true;
+        }
+        function nextSentence() {
+            currentIdx++;
+            if (currentIdx < sentenceQuestions.length) {
+                renderSentenceQuestion();
+            } else {
+                document.getElementById('main-content').innerHTML = `
+                    <div style="text-align:center; font-size:1.2rem; margin-bottom:14px;">
+                        문장 문제 풀이 완료!
+                    </div>
+                    <div style="text-align:center; font-size:1rem; margin-bottom:10px;">
+                        맞힌 개수: <b>${correct}</b> / 오답: <b>${wrong}</b>
+                    </div>
+                    <div style="text-align:center;">
+                        <button class="next-btn" onclick="showSentenceQuiz(0)">다시 풀기</button>
+                        <button class="next-btn" onclick="showMain()">처음으로</button>
+                    </div>
+                `;
+            }
+        }
+        // ---- 처음 시작 ----
+        showPrevBtn(true);
+        updateNavBtn();
+    </script>
 </body>
 </html>
