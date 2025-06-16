@@ -1,3 +1,4 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -108,6 +109,57 @@
     #adminToggle input[type="checkbox"] {
       margin-left: 10px;
       transform: scale(1.5);
+    }
+
+    /* 모바일 최적화: 버튼 크기, 간격, 터치 영역 확대 */
+    @media (max-width: 600px) {
+      body {
+        padding: 0.5rem;
+        font-size: 1.1rem;
+      }
+      h1 {
+        font-size: 1.2rem;
+        margin-bottom: 1.2rem;
+      }
+      #mode-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+        margin-bottom: 1.2rem;
+      }
+      #mode-buttons button, #darkModeToggle, #back-button button {
+        font-size: 1.1rem;
+        padding: 1.1em 0;
+        margin: 0;
+        border-radius: 8px;
+        width: 100%;
+        min-height: 48px;
+        box-sizing: border-box;
+        touch-action: manipulation;
+      }
+      #quiz-container .question-box {
+        margin-bottom: 1.2rem;
+      }
+      #answerInput {
+        font-size: 1.1rem;
+        padding: 0.7rem;
+        width: 90%;
+        min-height: 44px;
+      }
+      #adminToggle {
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      #adminToggle label {
+        font-size: 1rem;
+      }
+      #adminToggle input[type="checkbox"] {
+        margin-left: 0;
+        margin-top: 4px;
+        transform: scale(1.7);
+      }
     }
   </style>
 </head>
