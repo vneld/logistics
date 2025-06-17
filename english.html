@@ -3,31 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <title>영어 문제 풀이</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        html, body {
-            margin: 0; padding: 0;
-            background: #f9f9f9;
+        body {
             font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f9f9f9;
+            margin: 0;
+            padding: 0;
         }
         .header {
             text-align: center;
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: bold;
-            margin-top: 60px;
-            margin-bottom: 24px;
+            margin-top: 40px;
+            margin-bottom: 30px;
             letter-spacing: 2px;
         }
         .menu {
             display: flex;
-            flex-wrap: wrap;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 30px;
+            gap: 15px;
+            margin-bottom: 40px;
         }
         .menu button {
-            font-size: 1rem;
-            padding: 10px 18px;
+            font-size: 1.1rem;
+            padding: 12px 28px;
             border: none;
             border-radius: 8px;
             background: #4a90e2;
@@ -35,54 +34,71 @@
             cursor: pointer;
             transition: background 0.2s;
         }
-        .menu button:active, .menu button:hover {
+        .menu button:hover {
             background: #357abd;
         }
         .scoreboard-area {
-            position: fixed;
-            top: 12px;
-            right: 12px;
-            z-index: 100;
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 20;
+        }
+        .scoreboard {
+            font-size: 1.1rem;
             background: #fff;
+            padding: 8px 18px;
             border-radius: 8px;
-            padding: 6px 12px;
-            font-size: 1rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
-        .nav-btn {
+        .reset-btn {
+            font-size: 0.9rem;
+            padding: 6px 14px;
+            border: none;
+            border-radius: 6px;
+            background: #e2e2e2;
+            color: #333;
+            cursor: pointer;
+            margin-left: 6px;
+        }
+        .reset-btn:hover {
+            background: #f2b84b;
+            color: #222;
+        }
+        .prev-btn {
             position: fixed;
-            top: 12px;
-            left: 12px;
-            z-index: 101;
-            font-size: 1rem;
-            font-weight: bold;
-            padding: 8px 14px;
+            top: 50%;
+            right: 40px;
+            transform: translateY(-50%);
+            padding: 12px 28px;
             border: none;
             border-radius: 8px;
             background: #f2b84b;
             color: #222;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            font-size: 1.1rem;
+            font-weight: bold;
             cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
-        .nav-btn:active {
-            background: #f6d27b;
-        }
-        .nav-btn.hidden {
+        .prev-btn.hidden {
             display: none;
         }
         .content {
-            max-width: 96vw;
+            max-width: 700px;
             margin: 0 auto;
             background: #fff;
             border-radius: 10px;
             box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-            padding: 28px 10px;
-            min-height: 180px;
+            padding: 40px 30px;
+            min-height: 220px;
             position: relative;
         }
         .question {
-            font-size: 1.1rem;
-            margin-bottom: 18px;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
             color: #222;
         }
         .eng-highlight {
@@ -92,12 +108,11 @@
             border-radius: 5px;
             padding: 2px 6px;
             display: inline-block;
-            word-break: break-all;
         }
         .input-area {
             display: flex;
-            gap: 8px;
-            margin-bottom: 14px;
+            gap: 10px;
+            margin-bottom: 16px;
         }
         .input-area input {
             flex: 1;
@@ -108,7 +123,7 @@
         }
         .input-area button {
             font-size: 1rem;
-            padding: 8px 14px;
+            padding: 8px 18px;
             border: none;
             border-radius: 6px;
             background: #4a90e2;
@@ -116,14 +131,14 @@
             cursor: pointer;
         }
         .result {
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
         .next-btn {
             margin-top: 8px;
             font-size: 1rem;
-            padding: 8px 16px;
+            padding: 8px 18px;
             border: none;
             border-radius: 6px;
             background: #6fdc6f;
@@ -137,45 +152,45 @@
         .box-words-area {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 16px;
+            gap: 10px;
+            margin-bottom: 20px;
         }
         .draggable-word {
             display: inline-block;
-            padding: 8px 10px;
+            padding: 8px 14px;
             background: #e0e7ef;
             border-radius: 8px;
-            margin: 3px 1px;
+            margin: 4px 2px;
             cursor: grab;
             border: 1.5px solid #4a90e2;
-            font-size: 0.95rem;
+            font-size: 1rem;
             user-select: none;
         }
         .draggable-word.hidden {
             display: none !important;
         }
         .dropzone {
-            min-width: 90px;
-            min-height: 32px;
+            min-width: 120px;
+            min-height: 34px;
             border: 2px dashed #bbb;
             border-radius: 8px;
             display: inline-block;
             vertical-align: middle;
-            margin: 0 4px;
+            margin: 0 8px;
             background: #f7f7f7;
             text-align: center;
-            line-height: 32px;
+            line-height: 34px;
         }
         .dropzone.filled {
             border: 2px solid #4a90e2;
             background: #d7f2ff;
         }
         .blank-question {
-            margin-bottom: 10px;
-            font-size: 1rem;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
         }
         .blank-kor {
-            margin-bottom: 3px;
+            margin-bottom: 4px;
             color: #444;
         }
         .blank-eng {
@@ -187,37 +202,30 @@
             display: inline-block;
         }
         .blankbox-row {
-            margin-bottom: 12px;
-            font-size: 1rem;
+            margin-bottom: 16px;
+            font-size: 1.1rem;
         }
         .blankbox-label {
             display: inline-block;
-            min-width: 22px;
+            min-width: 26px;
             font-weight: bold;
         }
         .blankbox-result {
             display: inline-block;
-            min-width: 36px;
+            min-width: 48px;
             font-weight: bold;
-            margin-right: 7px;
-        }
-        @media (max-width: 480px) {
-            .header { font-size: 1.2rem; margin-top: 46px; margin-bottom: 16px; }
-            .scoreboard-area { font-size: 0.93rem; padding: 4px 8px; }
-            .nav-btn { font-size: 0.95rem; padding: 7px 10px; }
-            .content { padding: 14px 2vw; }
-            .menu button { font-size: 0.95rem; padding: 8px 10px; }
-            .question, .blank-question, .blankbox-row { font-size: 0.97rem; }
-            .draggable-word { font-size: 0.9rem; padding: 7px 7px; }
-            .dropzone { min-width: 70px; min-height: 28px; font-size: 0.92rem; }
+            margin-right: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="scoreboard-area" id="scoreboard-area">
-        맞힌 개수: <span id="score-correct">0</span> / 오답: <span id="score-wrong">0</span>
+    <div class="scoreboard-area">
+        <div class="scoreboard">
+            맞힌 개수: <span id="score-correct">0</span> / 오답: <span id="score-wrong">0</span>
+        </div>
+        <button class="reset-btn" id="reset-btn" onclick="resetScore()">초기화</button>
     </div>
-    <button class="nav-btn" id="nav-btn" onclick="navAction()">이전</button>
+    <button class="prev-btn hidden" id="prev-btn" onclick="goPrev()">이전</button>
     <div class="header">영어 문제 풀이</div>
     <div class="menu">
         <button id="btn-translate">해석</button>
@@ -358,31 +366,18 @@
         let currentPage = "main";
         let prevStack = [];
 
-        // ---- 네비게이션/초기화 버튼 ----
-        function updateNavBtn() {
-            const navBtn = document.getElementById('nav-btn');
-            if(currentPage === "main") {
-                navBtn.textContent = "초기화";
-            } else {
-                navBtn.textContent = "이전";
-            }
-        }
-        function navAction() {
-            if(currentPage === "main") {
-                correct = 0; wrong = 0;
-                updateScore();
-            } else {
-                goPrev();
-            }
-        }
-
         // ---- 공통 함수 ----
         function updateScore() {
             document.getElementById('score-correct').textContent = correct;
             document.getElementById('score-wrong').textContent = wrong;
         }
+        function resetScore() {
+            correct = 0;
+            wrong = 0;
+            updateScore();
+        }
         function showPrevBtn(show = true) {
-            document.getElementById('nav-btn').classList.toggle('hidden', !show);
+            document.getElementById('prev-btn').classList.toggle('hidden', !show);
         }
         function goPrev() {
             if (prevStack.length > 0) {
@@ -402,8 +397,7 @@
         }
         function showMain() {
             currentPage = "main";
-            showPrevBtn(true);
-            updateNavBtn();
+            showPrevBtn(false);
             document.getElementById('main-content').innerHTML = `
                 <div style="text-align:center; color:#888; font-size:1.1rem;">
                     버튼을 눌러 문제를 시작하세요!
@@ -416,7 +410,6 @@
             currentPage = "translate";
             pushPrev("main");
             showPrevBtn(true);
-            updateNavBtn();
             correct = 0; wrong = 0; currentIdx = idx;
             updateScore();
             renderTranslationQuestion();
@@ -434,8 +427,9 @@
             `;
             document.getElementById('main-content').innerHTML = html;
             document.getElementById('answer-input').focus();
+            // 키보드 이벤트
             document.getElementById('answer-input').onkeydown = function(e) {
-                if (["Enter", " ", "ArrowRight", "ArrowDown"].includes(e.key)) {
+                if (["Enter"].includes(e.key)) {
                     e.preventDefault();
                     if (!document.getElementById('answer-input').disabled) checkAnswer();
                     else if (!document.getElementById('next-btn').classList.contains('hidden')) nextQuestion();
@@ -446,17 +440,27 @@
         }
         function checkAnswer() {
             const userInput = document.getElementById('answer-input').value.trim();
-            const answer = translationQuestions[currentIdx].kor.trim();
+            const q = translationQuestions[currentIdx];
             const resultMsg = document.getElementById('result-msg');
             const nextBtn = document.getElementById('next-btn');
-            const keywords = translationQuestions[currentIdx].keywords;
-            let allIncluded = keywords.every(k => userInput.includes(k));
+            const keywords = q.keywords;
+
+            // 공백, 쉼표, 마침표 모두 제거
+            function normalize(str) {
+                return str.replace(/[ ,.]/g, "");
+            }
+
+            // 답변에 키워드가 모두 포함되어 있으면 정답
+            let allIncluded = keywords.every(k =>
+                normalize(userInput).includes(normalize(k))
+            );
+
             if (allIncluded) {
                 resultMsg.textContent = "정답입니다! 👍";
                 resultMsg.style.color = "#2b9e2b";
                 correct++;
             } else {
-                resultMsg.textContent = "오답입니다. 정답: " + answer;
+                resultMsg.textContent = "오답입니다. 정답: " + q.kor;
                 resultMsg.style.color = "#e23c3c";
                 wrong++;
             }
@@ -470,10 +474,10 @@
                 renderTranslationQuestion();
             } else {
                 document.getElementById('main-content').innerHTML = `
-                    <div style="text-align:center; font-size:1.2rem; margin-bottom:14px;">
+                    <div style="text-align:center; font-size:1.3rem; margin-bottom:16px;">
                         해석 문제 풀이 완료!
                     </div>
-                    <div style="text-align:center; font-size:1rem; margin-bottom:10px;">
+                    <div style="text-align:center; font-size:1.1rem; margin-bottom:12px;">
                         맞힌 개수: <b>${correct}</b> / 오답: <b>${wrong}</b>
                     </div>
                     <div style="text-align:center;">
@@ -490,7 +494,6 @@
             currentPage = "verb";
             pushPrev("main");
             showPrevBtn(true);
-            updateNavBtn();
             correct = 0; wrong = 0; currentIdx = idx;
             updateScore();
             renderVerbQuestion();
@@ -509,7 +512,7 @@
             document.getElementById('main-content').innerHTML = html;
             document.getElementById('verb-input').focus();
             document.getElementById('verb-input').onkeydown = function(e) {
-                if (["Enter", " ", "ArrowRight", "ArrowDown"].includes(e.key)) {
+                if (["Enter"].includes(e.key)) {
                     e.preventDefault();
                     if (!document.getElementById('verb-input').disabled) checkVerbAnswer();
                     else if (!document.getElementById('verb-next-btn').classList.contains('hidden')) nextVerb();
@@ -542,10 +545,10 @@
                 renderVerbQuestion();
             } else {
                 document.getElementById('main-content').innerHTML = `
-                    <div style="text-align:center; font-size:1.2rem; margin-bottom:14px;">
+                    <div style="text-align:center; font-size:1.3rem; margin-bottom:16px;">
                         동사변형 문제 풀이 완료!
                     </div>
-                    <div style="text-align:center; font-size:1rem; margin-bottom:10px;">
+                    <div style="text-align:center; font-size:1.1rem; margin-bottom:12px;">
                         맞힌 개수: <b>${correct}</b> / 오답: <b>${wrong}</b>
                     </div>
                     <div style="text-align:center;">
@@ -562,7 +565,6 @@
             currentPage = "blank";
             pushPrev("main");
             showPrevBtn(true);
-            updateNavBtn();
             correct = 0; wrong = 0; currentIdx = idx;
             updateScore();
             renderBlankQuestion();
@@ -584,7 +586,7 @@
             document.getElementById('main-content').innerHTML = html;
             document.getElementById('blank-input').focus();
             document.getElementById('blank-input').onkeydown = function(e) {
-                if (["Enter", " ", "ArrowRight", "ArrowDown"].includes(e.key)) {
+                if (["Enter"].includes(e.key)) {
                     e.preventDefault();
                     if (!document.getElementById('blank-input').disabled) checkBlankAnswer();
                     else if (!document.getElementById('blank-next-btn').classList.contains('hidden')) nextBlank();
@@ -617,10 +619,10 @@
                 renderBlankQuestion();
             } else {
                 document.getElementById('main-content').innerHTML = `
-                    <div style="text-align:center; font-size:1.2rem; margin-bottom:14px;">
+                    <div style="text-align:center; font-size:1.3rem; margin-bottom:16px;">
                         빈칸 문제 풀이 완료!
                     </div>
-                    <div style="text-align:center; font-size:1rem; margin-bottom:10px;">
+                    <div style="text-align:center; font-size:1.1rem; margin-bottom:12px;">
                         맞힌 개수: <b>${correct}</b> / 오답: <b>${wrong}</b>
                     </div>
                     <div style="text-align:center;">
@@ -637,14 +639,13 @@
             currentPage = "blankbox";
             pushPrev("main");
             showPrevBtn(true);
-            updateNavBtn();
             correct = 0; wrong = 0;
             updateScore();
             let html = `<div class="box-words-area" id="box-words-area">`;
             blankboxWords.forEach((w, i) => {
                 html += `<div class="draggable-word" draggable="true" id="word-${i}" data-word="${w}">${w}</div>`;
             });
-            html += `</div><div style="margin-bottom:10px; color:#888;">단어 상자를 드래그해서 빈칸에 올려놓으세요.</div>`;
+            html += `</div><div style="margin-bottom:14px; color:#888;">단어 상자를 드래그해서 빈칸에 올려놓으세요.</div>`;
             blankboxQuestions.forEach((q, i) => {
                 html += `<div class="blankbox-row" id="blankbox-row-${i}">
                     <span class="blankbox-label">${i+1}.</span>
@@ -660,7 +661,7 @@
         function renderBlankboxQuestion(q, idx) {
             if (Array.isArray(q.a)) {
                 return q.q.replace("______", `<span class="dropzone" data-row="${idx}" data-pos="0"></span>`)
-                          .replace("______", `<span class="dropzone" data-row="${idx}" data-pos="1"></span>`);
+                         .replace("______", `<span class="dropzone" data-row="${idx}" data-pos="1"></span>`);
             } else if (q.q.includes("____") && !Array.isArray(q.a)) {
                 return q.q.replace(/____+/, `<span class="dropzone" data-row="${idx}" data-pos="0"></span>`);
             } else {
@@ -747,7 +748,6 @@
             currentPage = "sentence";
             pushPrev("main");
             showPrevBtn(true);
-            updateNavBtn();
             correct = 0; wrong = 0; currentIdx = idx;
             updateScore();
             renderSentenceQuestion();
@@ -766,7 +766,7 @@
             document.getElementById('main-content').innerHTML = html;
             document.getElementById('sentence-input').focus();
             document.getElementById('sentence-input').onkeydown = function(e) {
-                if (["Enter", " ", "ArrowRight", "ArrowDown"].includes(e.key)) {
+                if (["Enter"].includes(e.key)) {
                     e.preventDefault();
                     if (!document.getElementById('sentence-input').disabled) checkSentenceAnswer();
                     else if (!document.getElementById('sentence-next-btn').classList.contains('hidden')) nextSentence();
@@ -799,10 +799,10 @@
                 renderSentenceQuestion();
             } else {
                 document.getElementById('main-content').innerHTML = `
-                    <div style="text-align:center; font-size:1.2rem; margin-bottom:14px;">
+                    <div style="text-align:center; font-size:1.3rem; margin-bottom:16px;">
                         문장 문제 풀이 완료!
                     </div>
-                    <div style="text-align:center; font-size:1rem; margin-bottom:10px;">
+                    <div style="text-align:center; font-size:1.1rem; margin-bottom:12px;">
                         맞힌 개수: <b>${correct}</b> / 오답: <b>${wrong}</b>
                     </div>
                     <div style="text-align:center;">
@@ -813,8 +813,7 @@
             }
         }
         // ---- 처음 시작 ----
-        showPrevBtn(true);
-        updateNavBtn();
+        showPrevBtn(false);
     </script>
 </body>
 </html>
